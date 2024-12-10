@@ -1,4 +1,4 @@
-package org.tracker.trackersdk.model
+package org.tracker.trackersdk.data.model
 
 data class AnalyticsEvent(
     val eventName: String,

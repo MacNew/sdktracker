@@ -2,8 +2,8 @@ package org.tracker.trackersdk
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import org.tracker.trackersdk.model.AnalyticsEvent
-import java.util.UUID
+import org.tracker.trackersdk.data.Result
+import org.tracker.trackersdk.data.model.AnalyticsEvent
 
 class AnalyticsManager private constructor(private val context: Context) {
 
@@ -27,47 +27,51 @@ class AnalyticsManager private constructor(private val context: Context) {
     private var currentSessionId: String? = null
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-
     private val events: MutableList<AnalyticsEvent> = mutableListOf()
 
-    /**
-     * Starts a new analytics session.
-     */
-    fun startSession() {
-        currentSessionId = UUID.randomUUID().toString()
+    fun startSession(sessionId:String, result: (Result<String>)-> Unit ) {
+        currentSessionId = sessionId
         events.clear()
         sharedPreferences.edit().putString(KEY_SESSION_ID, currentSessionId).apply()
+        result.apply {
+            this.invoke(Result.Success(sessionId))
+        }
         Log.d("AnalyticsManager", "Session started: $currentSessionId")
     }
 
-    /**
-     * Ends the current analytics session and persists data.
-     */
-    fun endSession() {
+    fun endSession(result: (Result<String>)-> Unit) {
         if (currentSessionId != null) {
             persistSessionData()
+            result.apply {
+                this.invoke(Result.Success("Session ended: $currentSessionId"))
+            }
             Log.d("AnalyticsManager", "Session ended: $currentSessionId")
         } else {
+            result.apply {
+                this.invoke(Result.Error("No active session to end"))
+            }
             Log.e("AnalyticsManager", "No active session to end")
         }
         currentSessionId = null
     }
 
-    /**
-     * Logs an event in the current session.
-     */
-    fun trackEvent(event: AnalyticsEvent) {
+
+    fun trackEvent(event: AnalyticsEvent, result: (Result<String>)-> Unit) {
         if (currentSessionId == null) {
+            result.apply {
+                this.invoke(Result.Error("No active session. Start a session first."))
+            }
             Log.e("AnalyticsManager", "No active session. Start a session first.")
             return
         }
         events.add(event)
+        result.apply {
+            this.invoke(Result.Success("Event tracked: ${event.eventName} with properties: ${event.properties}"))
+        }
         Log.d("AnalyticsManager", "Event tracked: ${event.eventName} with properties: ${event.properties}")
     }
 
-    /**
-     * Persists session data.
-     */
+
     private fun persistSessionData() {
         val eventsJson = events.joinToString(separator = ";") { event ->
             "${event.eventName}:${event.properties.entries.joinToString(",") { "${it.key}=${it.value}" }}"
@@ -75,9 +79,7 @@ class AnalyticsManager private constructor(private val context: Context) {
         sharedPreferences.edit().putString(KEY_EVENTS, eventsJson).apply()
     }
 
-    /**
-     * Retrieves persisted session data.
-     */
+
     fun getPersistedSessionData(): String {
         return sharedPreferences.getString(KEY_EVENTS, "") ?: ""
     }
