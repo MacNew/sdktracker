@@ -8,5 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name= "title_color">#FFFFFFFF</color>
-    <color name="text_color">#FFF1B90D</color>
+    <color name="text_color">#FFFFFF</color>
+    <color name="end_color">#FFFF5722</color>
+    <color name="card_text_color">#FF000000</color>
 </resources>
