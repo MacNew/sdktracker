@@ -1,5 +1,6 @@
 package org.tracker.sdk
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -41,7 +42,7 @@ class MainActivity : ComponentActivity() {
                         AnalyticsExampleScreen(analyticsManager, viewModel, navController)
                     }
                     composable("screen_two") {
-                        ScreenTwo()
+                        ScreenTwo(context = LocalContext.current, navController = navController)
                     }
                 }
             }
@@ -68,7 +69,7 @@ fun AnalyticsExampleScreen(
                     )
                 },
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    containerColor = colorResource(id = R.color.purple_500) // Use colorResource here
+                    containerColor = colorResource(id = R.color.purple_500)
                 )
             )
         },
@@ -96,7 +97,6 @@ fun AnalyticsExampleScreen(
                 ) {
                     Text(
                         text = logMessage,
-
                         fontSize = 16.sp,
                         color = colorResource(R.color.card_text_color),
                         modifier = Modifier
@@ -106,7 +106,6 @@ fun AnalyticsExampleScreen(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-
                 Button(
                     onClick = {
                         analyticsManager.startSession(UUID.randomUUID().toString()) { result ->
@@ -114,7 +113,6 @@ fun AnalyticsExampleScreen(
                                 is Result.Success -> {
                                     viewModel.updateLogMessage("Session Started Successfully!")
                                 }
-
                                 else -> {
                                     viewModel.updateLogMessage("Unable to Start Session")
                                 }
@@ -129,6 +127,29 @@ fun AnalyticsExampleScreen(
                         color = colorResource(R.color.text_color)
                         )
                 }
+
+                Button(
+                    onClick = {
+                         analyticsManager.startScreenTracking("MainActivity") { result->
+                             when (result) {
+                                 is Result.Success -> {
+                                     viewModel.updateLogMessage(result.data!!)
+                                 }
+                                 else -> {
+                                     viewModel.triggerToastMessage(result.data!!)
+                                 }
+                             }
+                         }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.end_color),)
+                ) {
+                    Text("Start Screen Timer Event", fontWeight = FontWeight.Bold,
+                        color = colorResource(R.color.text_color)
+                    )
+                }
+
                 Button(
                     onClick = {
                         val sampleEvent = AnalyticsEvent(
@@ -143,7 +164,6 @@ fun AnalyticsExampleScreen(
                                 is Result.Success -> {
                                     viewModel.updateLogMessage("Event 'ButtonClicked' tracked!")
                                 }
-
                                 else -> {
                                     viewModel.triggerToastMessage(result.data!!)
                                 }
@@ -154,21 +174,32 @@ fun AnalyticsExampleScreen(
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.purple_700))
                 ) {
-                    Text("Track Event", fontWeight = FontWeight.Bold,
-                        color = colorResource(R.color.text_color)
+                    Text("Start  Button Clicked Event", fontWeight = FontWeight.Bold, color = colorResource(R.color.text_color)
                         )
                 }
-
                 Button(
                     onClick = {
-                              navController.navigate("screen_two")
-
+                        if (analyticsManager.getCurrentSession()!=null) {
+                            analyticsManager.endScreenTracking("MainActivity") {
+                                when (it) {
+                                    is Result.Success ->{
+                                        Log.d("MainActivity", it.data.toString())
+                                    }
+                                    is Result.Error -> {
+                                        Log.e("MainActivity", it.data.toString())
+                                    }
+                                }
+                                navController.navigate("screen_two")
+                            }
+                        } else {
+                            viewModel.triggerToastMessage("No active Session Found start a active session first")
+                        }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.teal_700))
                 ) {
-                    Text("Screen Two", fontWeight = FontWeight.Bold,
+                    Text("Results", fontWeight = FontWeight.Bold,
                         color = colorResource(R.color.text_color)
                         )
                 }
