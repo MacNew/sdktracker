@@ -11,4 +11,5 @@
     <color name="text_color">#FFFFFF</color>
     <color name="end_color">#FFFF5722</color>
     <color name="card_text_color">#FF000000</color>
+    <color name="card_container_color">#F5F5F5</color>
 </resources>

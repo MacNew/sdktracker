@@ -28,7 +28,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -107,9 +106,6 @@ fun ScreenTwo(context: Context, navController: NavHostController) {
                     }
                 }
             }
-
-
-
         }
     )
 }
@@ -121,7 +117,7 @@ fun EventCard(event: AnalyticsEvent) {
             .fillMaxWidth()
             .padding(bottom = 12.dp),
         elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = colorResource(R.color.card_container_color))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -135,7 +131,7 @@ fun EventCard(event: AnalyticsEvent) {
                 Text(
                     text = "$key: $value",
                     fontSize = 16.sp,
-                    color = Color.DarkGray
+                    color = colorResource(id = R.color.text_color)
                 )
             }
         }
