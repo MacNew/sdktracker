@@ -7,6 +7,7 @@ import android.os.SystemClock
 import android.util.Log
 import org.tracker.trackersdk.data.Result
 import org.tracker.trackersdk.data.model.AnalyticsEvent
+import org.tracker.trackersdk.utils.EventParser.Companion.parseEvents
 
 class AnalyticsManager private constructor(private val context: Context) {
 
@@ -128,19 +129,7 @@ class AnalyticsManager private constructor(private val context: Context) {
         }
     }
 
-    private fun parseEvents(data: String): List<AnalyticsEvent> {
-        return data.split(";").mapNotNull { entry ->
-            val parts = entry.split(":")
-            if (parts.size == 2) {
-                val eventName = parts[0]
-                val properties = parts[1].split(",").associate {
-                    val keyValue = it.split("=")
-                    (if (keyValue.size == 2) keyValue[0] to keyValue[1] else null)!!
-                }
-                AnalyticsEvent(eventName, properties.toMutableMap())
-            } else null
-        }
-    }
+
 
     fun getPersistedSessionData(): String {
         return sharedPreferences.getString(KEY_EVENTS, "") ?: ""
