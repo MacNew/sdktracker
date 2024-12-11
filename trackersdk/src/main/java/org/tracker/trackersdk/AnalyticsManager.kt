@@ -1,5 +1,6 @@
 package org.tracker.trackersdk
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.SystemClock
@@ -15,6 +16,7 @@ class AnalyticsManager private constructor(private val context: Context) {
         private const val KEY_EVENTS = "Events"
         private const val MyLog = "AnalyticsManager"
 
+        @SuppressLint("StaticFieldLeak")
         @Volatile
         private var INSTANCE: AnalyticsManager? = null
 
@@ -50,6 +52,7 @@ class AnalyticsManager private constructor(private val context: Context) {
 
     fun startSession(sessionId: String, result: (Result<String>) -> Unit) {
         currentSessionId = sessionId
+        // we are clearing all events
         events.clear()
         persistSessionData()
         result.invoke(Result.Success(sessionId))
@@ -82,6 +85,7 @@ class AnalyticsManager private constructor(private val context: Context) {
     }
 
     fun startScreenTracking(screenName: String, result: (Result<String>) -> Unit) {
+        // Now i am not saving data into shared preferences because we are saving data while opening next screen
         if (currentSessionId == null) {
             result.invoke(Result.Error("No active session. Start a session first."))
             Log.e("AnalyticsManager", "No active session. Start a session first.")
@@ -111,11 +115,13 @@ class AnalyticsManager private constructor(private val context: Context) {
         }
     }
 
+
+    // We are storing our data into SharedPreferences.
     private fun persistSessionData() {
         sharedPreferences.edit().apply {
             putString(KEY_SESSION_ID, currentSessionId)
             val eventsJson = events.joinToString(separator = ";") { event ->
-                "${event.eventName}:${event.properties.entries.joinToString(",") { "${it.key}=${it.value}" }}"
+                "${event.eventName}:${event.properties.entries.joinToString(",") { "${it.key}=${it.value}"}}"
             }
             putString(KEY_EVENTS, eventsJson)
             apply()
