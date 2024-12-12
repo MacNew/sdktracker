@@ -1,6 +1,9 @@
 package org.tracker.trackersdk.utils
 
 import org.tracker.trackersdk.data.model.AnalyticsEvent
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 internal class EventParser {
@@ -19,5 +22,12 @@ internal class EventParser {
                 } else null
             }
         }
+
     }
+}
+
+
+fun Long.toUserReadableDateTime(): String {
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+    return dateFormat.format(Date(this))
 }

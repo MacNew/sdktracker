@@ -88,7 +88,7 @@ fun ScreenTwo(context: Context, navController: NavHostController) {
                     Text(
                         text = "No events tracked yet.",
                         fontSize = 18.sp,
-                        color = colorResource(id = R.color.text_color),
+                        color = colorResource(id = R.color.card_text_color),
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .align(Alignment.Center)
@@ -131,7 +131,7 @@ fun EventCard(event: AnalyticsEvent) {
                 Text(
                     text = "$key: $value",
                     fontSize = 16.sp,
-                    color = colorResource(id = R.color.text_color)
+                    color = colorResource(id = R.color.card_text_color)
                 )
             }
         }

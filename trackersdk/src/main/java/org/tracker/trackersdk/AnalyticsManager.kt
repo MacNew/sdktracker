@@ -8,6 +8,7 @@ import android.util.Log
 import org.tracker.trackersdk.data.Result
 import org.tracker.trackersdk.data.model.AnalyticsEvent
 import org.tracker.trackersdk.utils.EventParser.Companion.parseEvents
+import org.tracker.trackersdk.utils.toUserReadableDateTime
 
 class AnalyticsManager private constructor(private val context: Context) {
 
@@ -79,6 +80,9 @@ class AnalyticsManager private constructor(private val context: Context) {
             Log.e(MyLog, "No active session. Start a session first.")
             return
         }
+        event.properties.apply {
+            put("eventTime", System.currentTimeMillis().toUserReadableDateTime())
+        }
         events.add(event)
         persistSessionData()
         result.invoke(Result.Success("Event tracked: ${event.eventName} with properties: ${event.properties}"))
@@ -105,7 +109,8 @@ class AnalyticsManager private constructor(private val context: Context) {
                 eventName = "ScreenTime",
                 properties = mutableMapOf(
                     "screenName" to screenName,
-                    "durationInSeconds" to (duration / 1000).toString()
+                    "durationInSeconds" to (duration / 1000).toString(),
+                    "eventTime" to System.currentTimeMillis().toUserReadableDateTime()
                 )
             )
             trackEvent(event, result)
