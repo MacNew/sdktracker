@@ -76,6 +76,11 @@ fun AnalyticsExampleScreen(
         modifier = Modifier.fillMaxSize(),
         content = { innerPadding ->
             LaunchedEffect(Unit) {
+                if (analyticsManager.getCurrentSession()!= null) {
+                    viewModel.updateLogMessage("Active Session Found!")
+                } else {
+                    viewModel.updateLogMessage("Welcome to Analytics SDK Example!")
+                }
                 viewModel.toastEvent.collect { message ->
                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 }
