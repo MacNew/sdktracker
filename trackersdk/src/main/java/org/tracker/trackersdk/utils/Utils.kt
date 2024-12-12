@@ -28,6 +28,6 @@ internal class EventParser {
 
 
 fun Long.toUserReadableDateTime(): String {
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
     return dateFormat.format(Date(this))
 }
