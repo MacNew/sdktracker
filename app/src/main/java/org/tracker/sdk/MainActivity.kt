@@ -145,7 +145,7 @@ fun AnalyticsExampleScreen(
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.end_color),)
                 ) {
-                    Text("Start Screen Timer Event", fontWeight = FontWeight.Bold,
+                    Text("Screen timer event", fontWeight = FontWeight.Bold,
                         color = colorResource(R.color.text_color)
                     )
                 }
